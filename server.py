@@ -28,12 +28,15 @@ def handle_client(conn , addr):
         # here we will first receive the actual message size.
         # decoding the binary format into the provided format
 
-        msg_length = int(msg_length) # now the msg_length will be used as the buffer size
-        msg = conn.recv(msg_length).decode(FORMAT)
-        if msg == DISCONNECT_MESSAGE:
-            connected = False
-        print(f"[{addr} --> {msg}]")
+        if msg_length:
+            msg_length = int(msg_length) # now the msg_length will be used as the buffer size
+            msg = conn.recv(msg_length).decode(FORMAT)
+            if msg == DISCONNECT_MESSAGE: # since we will receive no msg first time so it will be none
+                connected = False
+            print(f"[{addr} --> {msg}]")
 
+        # disconnected message if encountered then the thread running that client will over and stopped. So when it will connect then we will see the actual no. of connections. 
+        # if this is not introduced then if one client joined multiple times in a single session or at a same time simultaneouly then active connections will show wrong record.
     conn.close()
 
 
@@ -44,7 +47,7 @@ def start():
     print(f"[LISTENING] Server is listening on {SERVER}")
     while True:
         # infinite loop for listening
-        print(server.accept())
+        # print(server.accept()) # server.accept() is a blocking line of code.
         conn , addr = server.accept() # storing the connection object in conn for communication and addr if for storing address of the client. It will be ipaddress and port
         thread = threading.Thread(target=handle_client , args=(conn , addr))
         thread.start()
