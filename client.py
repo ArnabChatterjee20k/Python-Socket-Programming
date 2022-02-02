@@ -22,6 +22,7 @@ def send(msg):
     client.send(send_length)
     client.send(message)  # actual message
 
+    print(client.recv(2048).decode(FORMAT))
 
 send("hllooo")
 send("hllooo")
